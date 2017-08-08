@@ -65,8 +65,24 @@ docker-compose run web django-admin.py startproject Deepqueue ./web
 
 ```
 
-
+# Connect DB
+* in setting.py
+```python
+ALLOWED_HOSTS = ['*']
+...
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'HOST': 'db',
+        'PORT': 5432,
+    }
+}
+```
 # note
-* To start the Django project```docker-compose run web django-admin.py startproject Deepqueue ./web```
-* To remove some directory ```docker-compose run web rm -rf some_dir .```
+* To change owner of the current directory ```sudo chown -R $USER:$USER .```
 * To execute Python kernel ```docker-compose run web python3```
+* To start the Django project```docker-compose run web django-admin.py startproject Deepqueue ./web```
+* To start bash```docker-compose run web bash```
+* To reset db ```python manage.py reset_db``` 

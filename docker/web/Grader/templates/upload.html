@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>U P L O A D</title>
+</head>
+<body>
+<h1>Upload Task File</h1>
+{% block body %}
+
+	<form action="." method="post" enctype="multipart/form-data"> 
+		{% csrf_token %}
+		{{ form }}
+		<input type="submit" value="Submit">
+	</form>
+{% endblock %}
+</body>
+</html>
