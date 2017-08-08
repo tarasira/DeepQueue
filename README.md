@@ -8,6 +8,10 @@
   sudo sh get-docker.sh
   sudo usermod -aG docker your-user
 ```
+or
+```sh
+curl -sSL https://get.docker.com | sh
+```
 # Docker compose
 [ref](https://docs.docker.com/compose/django/#create-a-django-project)
 * The demo in ref is used in this script
@@ -86,3 +90,43 @@ DATABASES = {
 * To start the Django project```docker-compose run web django-admin.py startproject Deepqueue ./web```
 * To start bash```docker-compose run web bash```
 * To reset db ```python manage.py reset_db``` 
+
+# Nvidia Docker
+[ref](https://github.com/NVIDIA/nvidia-docker)
+```sh
+  wget -P /tmp https://github.com/NVIDIA/nvidia-docker/releases/download/v1.0.1/nvidia-docker_1.0.1-1_amd64.deb
+  sudo dpkg -i /tmp/nvidia-docker*.deb && rm /tmp/nvidia-docker*.deb
+  nvidia-docker run --rm nvidia/cuda nvidia-smi
+```
+
+nvidia-docker run --rm tensorflow/tensorflow:nightly-devel-gpu python -c 'import tensorflow as tf ; print tf.__version__'
+
+
+nvidia-docker run --rm tensorflow/tensorflow:nightly-devel-gpu python -c '
+import tensorflow as tf;
+a=tf.constant(2);
+b=tf.constant(3);
+c=tf.add(a,b);
+with tf.Session() as session:
+    result=session.run(c);
+    print(result)'
+
+nvidia-docker run -it -p 8888:8888 gcr.io/tensorflow/tensorflow:latest-gpu python -c 'import tensorflow as tf ; print tf.__version__'
+
+nvidia-docker run --rm gcr.io/tensorflow/tensorflow:latest-gpu python -c 'import tensorflow as tf ; print tf.__version__'
+
+# Create container
+[ref](https://docs.docker.com/get-started/part2/)
+```sh
+nvidia-docker build -t tfworker .
+nvidia-docker images
+nvidia-docker run --rm tfworker
+```
+
+#publish
+```sh
+nvidia-docker login
+nvidia-docker tag tfworker wasit7/tfworker:gpu
+nvidia-docker images
+nvidia-docker push wasit7/tfworker:gpu
+```
