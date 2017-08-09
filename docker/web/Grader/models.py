@@ -16,6 +16,7 @@ class Task(models.Model):
 	completed = models.BooleanField(default=False)
 	start_time = models.DateTimeField(auto_now_add=True)
 	complete_time = models.DateTimeField(null=True, blank=True)
+	complete_time2 = models.DateTimeField(null=True, blank=True)
 
 class UploadTaskForm(ModelForm):
     class Meta:

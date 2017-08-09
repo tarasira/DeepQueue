@@ -90,6 +90,14 @@ DATABASES = {
 * To start the Django project```docker-compose run web django-admin.py startproject Deepqueue ./web```
 * To start bash```docker-compose run web bash```
 * To reset db ```python manage.py reset_db``` 
+* Todelete docker image 
+```sh
+#!/bin/bash
+# Delete all containers
+docker rm $(docker ps -a -q)
+# Delete all images
+docker rmi $(docker images -q)
+```
 
 # Nvidia Docker
 [ref](https://github.com/NVIDIA/nvidia-docker)
@@ -98,10 +106,19 @@ DATABASES = {
   sudo dpkg -i /tmp/nvidia-docker*.deb && rm /tmp/nvidia-docker*.deb
   nvidia-docker run --rm nvidia/cuda nvidia-smi
 ```
-
+* print tensorflow verions
+```sh
 nvidia-docker run --rm tensorflow/tensorflow:nightly-devel-gpu python -c 'import tensorflow as tf ; print tf.__version__'
+````
 
+or
 
+```sh
+nvidia-docker run --rm gcr.io/tensorflow/tensorflow:latest-gpu python -c 'import tensorflow as tf ; print tf.__version__'
+```
+
+* excecute addition
+````sh
 nvidia-docker run --rm tensorflow/tensorflow:nightly-devel-gpu python -c '
 import tensorflow as tf;
 a=tf.constant(2);
@@ -110,10 +127,7 @@ c=tf.add(a,b);
 with tf.Session() as session:
     result=session.run(c);
     print(result)'
-
-nvidia-docker run -it -p 8888:8888 gcr.io/tensorflow/tensorflow:latest-gpu python -c 'import tensorflow as tf ; print tf.__version__'
-
-nvidia-docker run --rm gcr.io/tensorflow/tensorflow:latest-gpu python -c 'import tensorflow as tf ; print tf.__version__'
+```
 
 # Create container
 [ref](https://docs.docker.com/get-started/part2/)

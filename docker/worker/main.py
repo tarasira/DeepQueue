@@ -5,3 +5,4 @@ c=tf.add(a,b)
 with tf.Session() as session:
     result=session.run(c)
     print(result)
+    

@@ -1,15 +1,42 @@
 version: '3.3'
 
 services:
-  db:
-    image: postgres
+  
   web:
+    restart: always
     build: ./web
-    command: python3 manage.py runserver 0.0.0.0:8000
-    #command: python3
+    image: mydjango
+    env_file: ./web/.env
     volumes:
-      - .:/code
+      - ./web:/code
+      - /var/www/static
     ports:
       - "8000:8000"
-    depends_on:
+    links:
       - db
+      - setup
+    #command: python manage.py runserver 0.0.0.0:8000
+    #command: ls -la
+    command: /usr/local/bin/gunicorn Deepqueue.wsgi:application -w 2 -b :8000
+  
+  db:
+    restart: always
+    image: postgres
+
+  setup:
+    image: mydjango
+    command: ["./setup.sh"]
+    volumes:
+      - ./web:/code
+    links:
+      - db
+
+  nginx:
+    restart: always
+    build: ./nginx/
+    ports:
+      - "80:80"
+    volumes:
+      - /var/www/static
+    links:
+      - web:web
