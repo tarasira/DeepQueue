@@ -1,5 +1,5 @@
-Django>=1.8,<2.0
-psycopg2
-django-extensions
+Django==1.11.4
+django-extensions==1.8.1
 gunicorn==19.3.0
-redis==2.10.3
+psycopg2==2.7.3
+#redis==2.10.3

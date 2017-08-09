@@ -1,5 +1,5 @@
 FROM python:3
-ENV PYTHONUNBUFFERED 1
+#ENV PYTHONUNBUFFERED 1
 RUN mkdir /code
 ADD . /code
 WORKDIR /code
@@ -12,4 +12,4 @@ RUN chmod 755 setup.sh
 RUN python manage.py collectstatic --noinput
 
 
-ENV DJANGO_DEBUG "False"
+#ENV DJANGO_DEBUG "True"

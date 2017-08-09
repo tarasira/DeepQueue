@@ -6,7 +6,7 @@ services:
     restart: always
     build: ./web
     image: mydjango
-    env_file: ./web/.env
+    #env_file: ./web/.env
     volumes:
       - ./web:/code
       - /var/www/static
@@ -22,6 +22,10 @@ services:
   db:
     restart: always
     image: postgres
+    ports:
+      - "5432:5432"
+#    volumes:
+#      - pgdata:/var/lib/postgresql/data/
 
   setup:
     image: mydjango
@@ -40,3 +44,11 @@ services:
       - /var/www/static
     links:
       - web:web
+  
+#  redis:
+#    restart: always
+#    image: redis:latest
+#    ports:
+#      - "6379:6379"
+#    volumes:
+#      - redisdata:/data
