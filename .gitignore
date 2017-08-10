@@ -1,6 +1,7 @@
 # Directory
 **/!/media/**
 **/media/**
+**/secret/**
 
 # DataBase
 *.sqlite3

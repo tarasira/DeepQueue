@@ -1,11 +1,12 @@
 import json
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, redirect, HttpResponse
 from django.http import JsonResponse
 from django.utils import timezone
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import authenticate, login
 
 from Grader.query import *
 from Grader.models import *
@@ -17,21 +18,22 @@ def _isworker(user):
 def has_task_permission(user):
     return _isworker(user) or _issuperuser(user)
 
+@user_passes_test(_issuperuser)
+def create_worker(request):
+    username = request.POST.get('username')
+    password = request.POST.get('password')
+    email = request.POST.get('email')
+    user, sess = new_worker(username=username, password=password, email=email)
+    print(user, sess)
+
 @csrf_exempt
 @user_passes_test(has_task_permission)
 def get_task(request):
-    # chk failure worker
-    print(request.session.session_key)
-    prev_task = Task.objects.filter(worker=request.user, status='1')
-    if prev_task.exists():
-        for task in prev_task:
-            task.worker = None
-            task.status = '0'
-            task.request_time = None
-            task.save()
-
+    release_prev_task(request.user)
     task = find_next_task()
-    if task:
+    if not task:
+        return HttpResponse(status=204)
+    else: 
         task.worker = request.user
         task.status = '1'
         task.request_time = timezone.now()
@@ -40,7 +42,40 @@ def get_task(request):
         res['task-id'] = task.id
         res.content = task.input_file.read()
         return res
-    return HttpResponse(status=204) 
+
+
+@csrf_exempt
+def user_login(request):
+    template = 'login.html'
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(username=username, password=password)
+        if user and user.is_active:
+            login(request, user)
+            print(user.groups)
+            if _isworker(user):
+                print(request.session)
+            elif user.is_superuser:
+                return redirect('/admin')
+
+            return HttpResponse(status=200)
+        else:
+            return HttpResponse(status=400)
+    else:
+        form = LoginForm()
+    return render(request, 'login.html', {'form': form})
+
+
+@login_required
+def upload(request):
+    template = 'upload.html'
+    if request.method == 'POST':
+        if upload_task(request):
+            return HttpResponse('C O M P L E T E')
+    else:
+        form = UploadTaskForm()
+    return render(request, 'upload.html', {'form': form})
 
 # @user_passes_test(_issuperuser)
 # send with this curl cmd
@@ -48,19 +83,11 @@ def get_task(request):
 @csrf_exempt
 @user_passes_test(has_task_permission)
 def write_task(request):
-    tid = request.META['HTTP_TASK_ID']
-    if Task.objects.get(id=tid).worker != request.user:
-        return HttpResponse(status=301)
-    if request.method == 'POST':
-        write_response(request)
-        return HttpResponse(status=200)
-
-@login_required
-def upload(request):
-    template = 'upload.html'
-    if request.method == 'POST':
-    	if upload_task(request):
-    		return HttpResponse('C O M P L E T E')
-    else:
-        form = UploadTaskForm()
-    return render(request, 'upload.html', {'form': form})
+    write_response(request)
+    return HttpResponse(status=200)
+    # tid = request.META['HTTP_TASK_ID']
+    # if Task.objects.get(id=tid).worker != request.user:
+    #     return HttpResponse(status=301)
+    # if request.method == 'POST':
+    #     write_response(request)
+    #     return HttpResponse(status=200)
