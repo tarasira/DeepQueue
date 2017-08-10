@@ -20,8 +20,8 @@ class Task(models.Model):
     input_file = models.FileField(upload_to=user_input_path)
     output_file = models.FileField(upload_to=user_output_path, blank=True, null=True)
     input_time = models.DateTimeField(auto_now_add=True)
-    output_time = models.DateTimeField(null=True, blank=True)
     request_time = models.DateTimeField(null=True, blank=True)
+    output_time = models.DateTimeField(null=True, blank=True)
 
 
 class WorkerForm(ModelForm):

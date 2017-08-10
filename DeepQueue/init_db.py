@@ -1,4 +1,5 @@
 import os
+import shutil
 import json
 from collections import defaultdict
 from django.contrib.auth.models import User, Group
@@ -32,6 +33,11 @@ User.objects.create_superuser(
 )
 print("- Create worker Group")
 Group.objects.create(name='worker')
+
+print("- Clear media directory")
+if os.path.exists('media'):
+    shutil.rmtree('media')
+
 print()
 print('Setup Complete')
 print('='*40)
