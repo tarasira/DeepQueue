@@ -1,9 +1,10 @@
 import os
 import json
-from pprint import pprint
 from collections import defaultdict
 from django.contrib.auth.models import User, Group
 
+print()
+print('='*40)
 _secret_path = os.path.join('secret','setup.json')
 print("Read secret variable")
 try:
@@ -18,7 +19,8 @@ except FileNotFoundError as err:
     print('********************************************')
     print('!!! Secret File Not Found, use default value')
     print('********************************************')
-    pprint(secret_var)
+    for k, v in secret_var.items():
+        print('\t{}: {}'.format(k, v))
 secret_var = defaultdict(str, secret_var)
 
 print()
@@ -30,4 +32,6 @@ User.objects.create_superuser(
 )
 print("- Create worker Group")
 Group.objects.create(name='worker')
+print()
 print('Setup Complete')
+print('='*40)

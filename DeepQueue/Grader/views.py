@@ -20,11 +20,16 @@ def has_task_permission(user):
 
 @user_passes_test(_issuperuser)
 def create_worker(request):
-    username = request.POST.get('username')
-    password = request.POST.get('password')
-    email = request.POST.get('email')
-    user, sess = new_worker(username=username, password=password, email=email)
-    print(user, sess)
+    template = 'create_worker.html'
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        email = request.POST.get('email')
+        user, sess = new_worker(username=username, password=password, email=email)
+        return JsonResponse({'username':username, 'password':password, 'session_key':sess.session_key})
+    else:
+        form = WorkerForm()
+    return render(request, template, {'form': form})
 
 @csrf_exempt
 @user_passes_test(has_task_permission)
@@ -53,9 +58,11 @@ def user_login(request):
         user = authenticate(username=username, password=password)
         if user and user.is_active:
             login(request, user)
-            print(user.groups)
             if _isworker(user):
                 print(request.session)
+                res = HttpResponse(content_type='text/plain', status=200)
+                res.content = request.session.session_key
+                return res
             elif user.is_superuser:
                 return redirect('/admin')
 
@@ -83,8 +90,10 @@ def upload(request):
 @csrf_exempt
 @user_passes_test(has_task_permission)
 def write_task(request):
-    write_response(request)
-    return HttpResponse(status=200)
+    if request.method == 'POST':
+        write_response(request)
+        return HttpResponse(status=200)
+    return HttpResponse(status=400)
     # tid = request.META['HTTP_TASK_ID']
     # if Task.objects.get(id=tid).worker != request.user:
     #     return HttpResponse(status=301)

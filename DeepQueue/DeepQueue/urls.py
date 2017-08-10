@@ -26,7 +26,7 @@ urlpatterns = [
     url(r'^newworker/', create_worker),
     url(r'^gettask/', get_task),
     url(r'^writetask/', write_task),
-    url(r'^login/', user_login)
+    url(r'^login/', user_login),
 ] 
 
 # urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

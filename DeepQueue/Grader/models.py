@@ -24,6 +24,11 @@ class Task(models.Model):
     request_time = models.DateTimeField(null=True, blank=True)
 
 
+class WorkerForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'password', 'email', 'first_name', 'last_name']
+
 class LoginForm(ModelForm):
     class Meta:
         model = User
