@@ -144,3 +144,6 @@ nvidia-docker tag tfworker wasit7/tfworker:gpu
 nvidia-docker images
 nvidia-docker push wasit7/tfworker:gpu
 ```
+
+# DO Nginx tutorial
+[ref](https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-16-04)

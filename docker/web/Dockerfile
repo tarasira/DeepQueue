@@ -3,9 +3,10 @@ FROM python:3
 RUN mkdir /code
 ADD . /code
 WORKDIR /code
-RUN mkdir -p /var/www/static/
-RUN touch /var/www/DeepQueue.log
-RUN chmod -R 755 /var/www
+#RUN mkdir -p /var/www/static/
+#RUN touch /var/www/static/nginx_error.log
+#RUN touch /var/www/static/nginx_access.log
+#RUN chmod -R 755 /var/www
 RUN ls -la
 RUN pip install -r requirements.txt
 RUN chmod 755 setup.sh

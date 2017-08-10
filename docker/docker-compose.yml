@@ -1,7 +1,16 @@
 version: '3.3'
 
 services:
-  
+  nginx:
+    restart: always
+    build: ./nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./static:/var/www/static
+    links:
+      - web:web
+
   web:
     restart: always
     build: ./web
@@ -9,10 +18,11 @@ services:
     #env_file: ./web/.env
     volumes:
       - ./web:/code
-      - /var/www/static
+      - ./static:/var/www/static
     ports:
       - "8000:8000"
     links:
+      
       - db
       - setup
     #command: python manage.py runserver 0.0.0.0:8000
@@ -34,16 +44,6 @@ services:
       - ./web:/code
     links:
       - db
-
-  nginx:
-    restart: always
-    build: ./nginx/
-    ports:
-      - "80:80"
-    volumes:
-      - /var/www/static
-    links:
-      - web:web
   
 #  redis:
 #    restart: always
@@ -52,3 +52,6 @@ services:
 #      - "6379:6379"
 #    volumes:
 #      - redisdata:/data
+
+# volumes:
+#   static_volume: {}
