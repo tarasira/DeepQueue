@@ -4,4 +4,4 @@ RUN mkdir /code
 ADD *.py /code/
 WORKDIR /code
 RUN ls -la
-ENTRYPOINT ["python", "-"]
+ENTRYPOINT ["python", "-", "2>&1"]

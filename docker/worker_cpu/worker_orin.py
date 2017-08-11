@@ -23,22 +23,22 @@ while n_try_connect < max_try_connect:
     _writeurl = "http://{}/writetask/".format(host)
 
     try:
-        print('Attemp to ask for new task from {}'.format(host))
+        # print('Attemp to ask for new task from {}'.format(host))
         res = request(_geturl, 'get')
         n_try_connect = 0
         if "login" in res.url:
-            print('Session expire, attemp to re-login')
+            # print('Session expire, attemp to re-login')
             res = request(res.url, 'post', data=config)
             if res.status_code == 400:
-                print()
-                print('***********************************************')
-                print()
-                print('!!! F A I L   T O   L O G I N.')
-                print()
-                print(' Please check config.json Or contact to admin.')
-                print()
-                print('***********************************************')
-                print()
+                # print()
+                # print('***********************************************')
+                # print()
+                # print('!!! F A I L   T O   L O G I N.')
+                # print()
+                # print(' Please check config.json Or contact to admin.')
+                # print()
+                # print('***********************************************')
+                # print()
                 break
             config["sessionid"] = res.text
             res = request(_geturl, 'get')
@@ -46,15 +46,15 @@ while n_try_connect < max_try_connect:
                 fp.write(json.dumps(config, indent=4, sort_keys=True))
 
         if res.status_code != 204 or res.text != '':
-            print('\tGet new task')
+            # print('\tGet new task')
             with open('tmp.py', 'w+') as ofp:
                 ofp.write(res.text)
             with open('tmp.txt', 'w+') as ofp:
                 call(['cat', 'tmp.py', '|', 'docker', 'run', '-i', 'tfworker'], stdout=ofp)
             with open('tmp.txt', 'rb') as ofp:
                 out = ofp.read()
-                print(out)
-            print ('\tresponse output to host')
+                # print(out)
+            # print ('\tresponse output to host')
             res = request(_writeurl, 'post', {'content':out} )
             os.remove('tmp.py')
             os.remove('tmp.txt')
@@ -63,7 +63,7 @@ while n_try_connect < max_try_connect:
 
     except requests.exceptions.ConnectionError as err:
         n_try_connect += 1
-        print('\tError, try to connect {} in {}/{} times'.format(
+        # print('\tError, try to connect {} in {}/{} times'.format(
             host, n_try_connect, max_try_connect)
         )
         sleep(1)
@@ -72,8 +72,8 @@ while n_try_connect < max_try_connect:
     finally:
         with open("config.json", "w+") as fp:
             fp.write(json.dumps(config, indent=4, sort_keys=True))
-    print('-'*40)
-    print()
+    # print('-'*40)
+    # print()
 else:
-    print('Maximum attemp to connect {}'.format(host))
-    print('Please contact to admin')
+    # print('Maximum attemp to connect {}'.format(host))
+    # print('Please contact to admin')

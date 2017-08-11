@@ -50,22 +50,13 @@ while n_try_connect < max_try_connect:
             with open('tmp.py', 'w+') as ofp:
                 ofp.write(res.text)
             with open('tmp.txt', 'w+') as ofp:
-                # call(['cat', 'tmp.py', '|', 'docker', 'run', '-i', 'tfworker'], stdout=ofp)
-                output = ''
-                try:
-                    # ps = subprocess.Popen(('cat', 'tmp.py'), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                    ps = subprocess.Popen(stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                    ps.stdin = res.text
-                    output = subprocess.check_output(('docker', 'run', '-i', 'tfworker'), stdin=ps.stdout, stderr=subprocess.STDOUT)
-                    ps.wait()
-                except Exception as err:
-                    print(err)
-                    print(output)
-            # with open('tmp.txt', 'rb') as ofp:
-            #     out = ofp.read()
-            #     # print(out)
-            # # print ('\tresponse output to host')
-            res = request(_writeurl, 'post', {'content':output} )
+                p1 = subprocess.Popen(['cat', 'tmp.py'], stdout=subprocess.PIPE)
+                p2 = subprocess.Popen(['docker', 'run', '-i', 'tfworker'], stdin=p1.stdout, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                out, err = p2.communicate()
+                print(out)
+                print()
+                print(err)
+            res = request(_writeurl, 'post', {'content':'{}\n{}'.format(out.decode('utf8'), err.decode('utf8'))} )
             os.remove('tmp.py')
             os.remove('tmp.txt')
         else:
@@ -73,9 +64,6 @@ while n_try_connect < max_try_connect:
 
     except requests.exceptions.ConnectionError as err:
         n_try_connect += 1
-        # print('\tError, try to connect {} in {}/{} times'.format(
-        #     host, n_try_connect, max_try_connect)
-        # )
         sleep(1)
 
 
