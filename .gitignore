@@ -107,7 +107,3 @@ ENV/
 
 # mypy
 .mypy_cache/
-
-**/!/migrations
-**/migrations/*.py
-**/!/migrations/__init__.py

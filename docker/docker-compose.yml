@@ -7,7 +7,9 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./static:/var/www/static
+      - type: volume
+        source: static_volume
+        target: /var/www/static
     links:
       - web:web
 
@@ -17,34 +19,35 @@ services:
     image: mydjango
     #env_file: ./web/.env
     volumes:
-      - ./web:/code
-      - ./static:/var/www/static
-    ports:
-      - "8000:8000"
+      - type: volume
+        source: static_volume
+        target: /var/www/static
+    expose:
+      - "8000"
     links:
-      
       - db
-      - setup
+    # To change the setting from `DeepQueue.settings.docker` to `DeepQueue.settings.dev`
+    #environment:
+    #  - DJANGO_SETTINGS_MODULE="DeepQueue.settings.dev"
     #command: python manage.py runserver 0.0.0.0:8000
     #command: ls -la
-    command: /usr/local/bin/gunicorn DeepQueue.wsgi:application -w 2 -b :8000
-  
+    # command: /usr/local/bin/gunicorn DeepQueue.wsgi:application -w 2 -b :8000
+    command: [sh, -c, "./setup.sh && /usr/local/bin/gunicorn DeepQueue.wsgi:application -w 2 -b :8000"]
+
   db:
     restart: always
     image: postgres
-    ports:
-      - "5432:5432"
+    expose:
+      - "5432"
 #    volumes:
 #      - pgdata:/var/lib/postgresql/data/
 
-  setup:
-    image: mydjango
-    command: ["./setup.sh"]
-    volumes:
-      - ./web:/code
-    links:
-      - db
-  
+  # setup:
+  #   image: mydjango
+  #   command: ["./setup.sh"]
+  #   depends_on:
+  #     - web
+
 #  redis:
 #    restart: always
 #    image: redis:latest
@@ -55,3 +58,6 @@ services:
 
 # volumes:
 #   static_volume: {}
+
+volumes:
+  static_volume:
