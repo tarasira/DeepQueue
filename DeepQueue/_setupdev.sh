@@ -1,5 +1,6 @@
-echo yes | ./manage.py reset_db 
-./manage.py makemigrations
-./manage.py migrate
-./manage.py shell < init_db.py
-./manage.py runserver 0.0.0.0:8000
+echo yes | python manage.py reset_db
+python manage.py makemigrations
+python manage.py makemigrations grader
+python manage.py migrate
+python manage.py shell < init_db.py
+python manage.py runserver 0.0.0.0:8000

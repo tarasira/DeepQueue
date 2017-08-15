@@ -1,10 +1,12 @@
-import os 
+import os
 from datetime import timedelta
-from Grader.models import *
+
 from django.utils import timezone
 from django.core.files.base import ContentFile
 from django.contrib.sessions.backends.db import SessionStore
 from django.contrib.auth.models import User, Group
+
+from grader.models import *
 
 def new_worker(**kwargs):
     user = User.objects.create_user(**kwargs)
@@ -12,10 +14,8 @@ def new_worker(**kwargs):
     sess = SessionStore()
     sess['_auth_user_id'] = user.id
     sess['_auth_user_hash'] = user.get_session_auth_hash()
-    # sess.set_expiry(timedelta(days=365))
     sess.save()
     return user, sess
-
 
 def upload_task(request):
     form = UploadTaskForm(request.POST, request.FILES)
@@ -50,15 +50,3 @@ def write_response(request):
     task.output_time = timezone.now()
     task.status = '2'
     task.save()
-    print(task)
-
-    # tid = request.META['HTTP_TASK_ID']
-    # fname =tid +'.txt'
-    # content = ContentFile(request.body)
-    # task = Task.objects.get(id=tid)
-    # task.output_file.delete()
-    # task.output_file.save(fname, content)
-    # task.output_time = timezone.now()
-    # task.status = True
-    # task.save()
-

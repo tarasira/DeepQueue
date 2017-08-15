@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>H O M E</title>
+    <script src=
+      "https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js">
+    </script>
+</head>
+<body>
+{% block body %}
+
+  <form action="." method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Save" />
+  </form>
+
+  <!-- <h1 ng-repeat="task in task_list">
+    {{task}}
+  </h1> -->
+  <h2>Task</h2>
+
+  <table>
+    <tr>
+        <th>#</th>
+        <th>Status</th>
+        <th>Input</th>
+        <th>Output</th>
+        <th>Describe</th>
+        <th>Submit Time</th>
+        <th>Response Time</th>
+
+    </tr>
+    {% for task in task_list %}
+    <tr>
+        <td>{{ task.id }}</td>
+        <td>{{ task.get_status_display }}</td>
+        <td>{{ task.input_file }}</td>
+        <td>{{ task.output_file }}</td>
+        <td>{{ task.describe }}</td>
+        <td>{{ task.input_time }}</td>
+        <td>{{ task.response_time }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+{% endblock %}
+</body>
+</html>

@@ -7,18 +7,41 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login
-
-from Grader.query import *
-from Grader.models import *
+from django.views import generic
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.middleware import csrf
+from auth.util import *
+from grader.query import *
+from grader.models import *
 # Create your views here.
-def _issuperuser(user):
-    return user.is_superuser
-def _isworker(user):    
-    return user.groups.filter(name__in=['worker']).exists()
-def has_task_permission(user):
-    return _isworker(user) or _issuperuser(user)
+has_task_permission = lambda x: is_superuser(x) or is_worker(x)
 
-@user_passes_test(_issuperuser)
+class HomeView(LoginRequiredMixin, generic.CreateView):
+    template_name = 'home.html'
+    model = Task
+    form_class = UploadTaskForm
+    def form_valid(self, form):
+        print('awf')
+        upload_task(self.request)
+
+    def post(self, request):
+        upload_task(request)
+        return redirect('/home/')
+
+    def get_context_data(self, **kwargs):
+        objs = None
+        if is_student(self.request.user):
+            objs = Task.objects.filter(user=self.request.user)
+        if is_superuser(self.request.user):
+            objs = Task.objects.all()
+        print(super().get_context_data())
+        return dict(
+            super().get_context_data(**kwargs),
+            task_list = objs,
+            csrftoken = csrf.get_token(self.request)
+        )
+
+@user_passes_test(is_superuser)
 def create_worker(request):
     template = 'create_worker.html'
     if request.method == 'POST':
@@ -26,7 +49,8 @@ def create_worker(request):
         password = request.POST.get('password')
         email = request.POST.get('email')
         user, sess = new_worker(username=username, password=password, email=email)
-        return JsonResponse({'username':username, 'password':password, 'session_key':sess.session_key})
+        return JsonResponse({'username':username, 'password':password, \
+            'session_key':sess.session_key})
     else:
         form = WorkerForm()
     return render(request, template, {'form': form})
@@ -38,7 +62,7 @@ def get_task(request):
     task = find_next_task()
     if not task:
         return HttpResponse(status=204)
-    else: 
+    else:
         task.worker = request.user
         task.status = '1'
         task.request_time = timezone.now()
@@ -48,32 +72,6 @@ def get_task(request):
         res.content = task.input_file.read()
         return res
 
-
-@csrf_exempt
-def user_login(request):
-    template = 'login.html'
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(username=username, password=password)
-        if user and user.is_active:
-            login(request, user)
-            if _isworker(user):
-                print(request.session)
-                res = HttpResponse(content_type='text/plain', status=200)
-                res.content = request.session.session_key
-                return res
-            elif user.is_superuser:
-                return redirect('/admin')
-
-            return HttpResponse(status=200)
-        else:
-            return HttpResponse(status=400)
-    else:
-        form = LoginForm()
-    return render(request, 'login.html', {'form': form})
-
-
 @login_required
 def upload(request):
     template = 'upload.html'
@@ -82,11 +80,8 @@ def upload(request):
             return HttpResponse('C O M P L E T E')
     else:
         form = UploadTaskForm()
-    return render(request, 'upload.html', {'form': form})
+    return render(request, template, {'form': form})
 
-# @user_passes_test(_issuperuser)
-# send with this curl cmd
-# curl -H "task-id: 1" -d @hello.txt localhost:8000/writetask/
 @csrf_exempt
 @user_passes_test(has_task_permission)
 def write_task(request):
@@ -94,9 +89,3 @@ def write_task(request):
         write_response(request)
         return HttpResponse(status=200)
     return HttpResponse(status=400)
-    # tid = request.META['HTTP_TASK_ID']
-    # if Task.objects.get(id=tid).worker != request.user:
-    #     return HttpResponse(status=301)
-    # if request.method == 'POST':
-    #     write_response(request)
-    #     return HttpResponse(status=200)

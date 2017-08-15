@@ -15,10 +15,11 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-from Grader.views import *
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
+
+from grader.views import *
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -26,7 +27,7 @@ urlpatterns = [
     url(r'^newworker/', create_worker),
     url(r'^gettask/', get_task),
     url(r'^writetask/', write_task),
-    url(r'^login/', user_login),
-] 
-
+    url(r'^accounts/', include('django.contrib.auth.urls')),
+    url(r'^home/$', HomeView.as_view())
+]
 # urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
