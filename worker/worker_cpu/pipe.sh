@@ -1,0 +1,1 @@
+cat tmp.py | docker run -i tfworker

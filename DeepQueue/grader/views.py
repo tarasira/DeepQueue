@@ -1,6 +1,6 @@
 import json
-from django.shortcuts import render, redirect, HttpResponse
-from django.http import JsonResponse
+from django.shortcuts import render, redirect
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponse, FileResponse
 from django.utils import timezone
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.decorators import user_passes_test
@@ -8,38 +8,33 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login
 from django.views import generic
+from django.views.generic.edit import FormMixin
+from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.middleware import csrf
-from auth.util import *
+from myauth.util import *
 from grader.query import *
 from grader.models import *
 # Create your views here.
 has_task_permission = lambda x: is_superuser(x) or is_worker(x)
-
-class HomeView(LoginRequiredMixin, generic.CreateView):
+file_mode = {'inpt': 'input_file', 'oupt': 'output_file'}
+class HomeView(LoginRequiredMixin, FormMixin, ListView ):
     template_name = 'home.html'
     model = Task
+    paginate_by = 10
+    context_object_name = 'task_list'
     form_class = UploadTaskForm
-    def form_valid(self, form):
-        print('awf')
-        upload_task(self.request)
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         upload_task(request)
-        return redirect('/home/')
+        return HttpResponseRedirect('/')
 
-    def get_context_data(self, **kwargs):
-        objs = None
-        if is_student(self.request.user):
-            objs = Task.objects.filter(user=self.request.user)
+    def get_queryset(self):
         if is_superuser(self.request.user):
-            objs = Task.objects.all()
-        print(super().get_context_data())
-        return dict(
-            super().get_context_data(**kwargs),
-            task_list = objs,
-            csrftoken = csrf.get_token(self.request)
-        )
+            return Task.objects.all()
+        else:
+            return Task.objects.filter(user=self.request.user)
+
 
 @user_passes_test(is_superuser)
 def create_worker(request):
@@ -73,6 +68,12 @@ def get_task(request):
         return res
 
 @login_required
+def view(request, task_id, mode):
+    task = Task.objects.get(id=task_id)
+    if (task and task.user == request.user) or is_superuser(request.user):
+        return render(request, 'view.html', {'content':getattr(task, file_mode[mode]).read().decode()} )
+
+@login_required
 def upload(request):
     template = 'upload.html'
     if request.method == 'POST':
@@ -89,3 +90,4 @@ def write_task(request):
         write_response(request)
         return HttpResponse(status=200)
     return HttpResponse(status=400)
+
