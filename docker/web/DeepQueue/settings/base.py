@@ -37,8 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'Grader.apps.GraderConfig',
     'django_extensions',
+    'grader',
+    'myauth'
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -121,16 +122,15 @@ USE_TZ = True
 
 
 LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = 'home'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
-STATIC_ROOT = '/var/www/static'
+# STATIC_ROOT = '/var/www/static'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    # os.path.join(BASE_DIR, "Grader", "static"),
+    os.path.join(BASE_DIR, "static"),
 ]
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # MEDIA_ROOT = "media/"

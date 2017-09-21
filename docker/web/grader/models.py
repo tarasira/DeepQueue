@@ -3,7 +3,7 @@ import os
 
 from django.db import models
 from django.contrib.auth.models import User
-from django.forms import ModelForm, TextInput, PasswordInput
+from django.forms import ModelForm, TextInput, PasswordInput, Textarea, CharField
 # Create your models here.
 _STATUS_CHOICE = (('0', 'To do'), ('1', 'Doing'), ('2', 'Done'))
 def user_input_path(instance, filename):
@@ -42,3 +42,7 @@ class UploadTaskForm(ModelForm):
     class Meta:
         model = Task
         fields = ['input_file', 'describe']
+
+    def __init__(self, *args, **kwargs):
+        super(UploadTaskForm, self).__init__(*args, **kwargs)
+        # self.fields['describe'] = CharField(widget=Textarea )

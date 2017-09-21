@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %} Deep Queue {% endblock %}
+{% block content %}
+{% load static %}
+<script src='{% static "js/run_prettify.js" %}'></script>
+<pre class="prettyprint linenums">
+{{ content }}
+</pre>
+{% endblock %}

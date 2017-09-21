@@ -27,12 +27,14 @@ secret_var = defaultdict(str, secret_var)
 print()
 print("- Create Admin user")
 User.objects.create_superuser(
-    username=secret_var['admin_username'], 
+    username=secret_var['admin_username'],
     password=secret_var['admin_password'],
     email=secret_var['admin_email']
 )
 print("- Create worker Group")
 Group.objects.create(name='worker')
+print("- Create student Group")
+Group.objects.create(name='student')
 
 print("- Clear media directory")
 if os.path.exists('media'):

@@ -1,0 +1,61 @@
+
+{% extends 'base.html' %}
+{% block title %} Deep Queue {% endblock %}
+{% block content %}
+
+  <form action="." method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Save" />
+  </form>
+
+  <h2>Task</h2>
+
+  <table class="table table-striped">
+    <tr>
+        <th>#</th>
+        <th>Status</th>
+        <th>Input</th>
+        <th>Output</th>
+        <th>Describe</th>
+        <th>Submit Time</th>
+        <th>Response Time</th>
+
+    </tr>
+    {% for task in task_list %}
+    <tr>
+        <td>{{ task.id }}</td>
+        <td>{{ task.get_status_display }}</td>
+        <td><a href='/view/{{task.id}}/inpt'>{{ task.input_file }}</a></td>
+        <td><a href='/view/{{task.id}}/oupt'>{{ task.output_file }}</a></td>
+        <td>{{ task.describe }}</td>
+        <td>{{ task.input_time }}</td>
+        <td>{{ task.output_time }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  {% if is_paginated %}
+    <ul class="pagination">
+      {% if page_obj.has_previous %}
+        <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+      {% else %}
+        <li class="disabled"><span>&laquo;</span></li>
+      {% endif %}
+      {% for i in paginator.page_range %}
+        {% if paginator.number == i %}
+          <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+        {% else %}
+          <li><a href="?page={{ i }}">{{ i }}</a></li>
+        {% endif %}
+      {% endfor %}
+      {% if page_obj.has_next %}
+        <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+      {% else %}
+        <li class="disabled"><span>&raquo;</span></li>
+      {% endif %}
+    </ul>
+  {% endif %}
+
+{% endblock %}
+
