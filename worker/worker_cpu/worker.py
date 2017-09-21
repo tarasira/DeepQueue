@@ -83,10 +83,10 @@ while n_try_connect < max_try_connect:
 
     finally:
         pass
-        # with open("config.json", "w+") as fp:
-        #     fp.write(json.dumps(config, indent=4, sort_keys=True))
+        with open("config.json", "w+") as fp:
+            fp.write(json.dumps(config, indent=4, sort_keys=True))
     print('-'*40)
-    print()
+    # print()
 else:
     print('Maximum attemp to connect {}'.format(host))
     print('Please contact to admin')

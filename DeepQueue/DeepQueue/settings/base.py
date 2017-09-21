@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 # Quick-start development settings - unsuitable for production
@@ -25,7 +25,7 @@ SECRET_KEY = 'e#&%#(ua6^sq+un3*pxg=00pdc7rlwg&ra4!mek&q&jy-d)4(l'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
+    # 'grader.apps.GraderConfig',
+    # 'myauth.apps.MyauthConfig',
     'grader',
     'myauth'
 ]
@@ -75,13 +77,16 @@ WSGI_APPLICATION = 'DeepQueue.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/1.9/ref/settings/#databases
+# https://docs.djangoproject.com/en/1.11/ref/settings/#databases
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
 }
 
 
@@ -117,14 +122,18 @@ USE_L10N = True
 
 USE_TZ = True
 
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
+# STATIC_ROOT = '/var/www/static'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-LOGIN_URL = '/login/'
 
 # MEDIA_ROOT = "media/"

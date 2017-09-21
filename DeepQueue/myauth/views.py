@@ -32,7 +32,7 @@ def login(request):
                     res = HttpResponse(content_type='text/plain', status=200)
                     res.content = request.session.session_key
                     return res
-                return HttpResponseRedirect(requestrequest.POST.get('next', '/'))
+                return HttpResponseRedirect(request.POST.get('next', '/'))
             else:
                 return HttpResponse(status=400)
     else:
